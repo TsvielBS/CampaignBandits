@@ -1,4 +1,4 @@
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 from pydantic import BaseModel
 
 
@@ -23,4 +23,12 @@ class NewCampaignRequest(BaseModel):
 
 
 class NewCampaignResponse(BaseModel):
+    campaign_id: int
+
+
+class UpdateBanditRequest(BaseModel):
+    new_sentences_and_rewards: List[Tuple[str, float]]
+
+
+class UpdateBanditResponse(BaseModel):
     campaign_id: int

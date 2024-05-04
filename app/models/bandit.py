@@ -61,14 +61,14 @@ class Bandit:
 
         return selected_arms_info
 
-    def update_model(self, new_sentences: Set[str], new_rewards: List[float]):
-        self.unexplored_sentences = self.unexplored_sentences.difference(new_sentences)
-        for sen, rwd in zip(new_sentences, new_rewards):
-            known_sen_rwd = self.explored_arms.get(sen, None)
+    def update_model(self, new_sentences_and_rewards: List[tuple]):
+        for sentence, reward in new_sentences_and_rewards:
+            self.unexplored_sentences.discard(sentence)
+            known_sen_rwd = self.explored_arms.get(sentence, None)
             if not known_sen_rwd:
-                self.explored_arms[sen] = BanditReward(rwd)
+                self.explored_arms[sentence] = BanditReward(reward)
             else:
-                self.explored_arms[sen].update_reward(rwd)
+                self.explored_arms[sentence].update_reward(reward)
 
     def update_unexplored(self, new_sentences: Set[str]):
         # Update the unexplored sentences

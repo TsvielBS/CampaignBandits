@@ -23,7 +23,7 @@ def example_campaign_id(clean_bandits_dir):
 def test_get_arms(example_campaign_id):
     bandit = Bandit({"Arm1": BanditReward(5)}, {"Arm2"})
     storage.save_bandit(example_campaign_id, bandit)
-    load_bandits()  # Update bandit_db after saving new bandit
+    load_bandits()
     response = client.get(f"/api/v1/bandit/get-arms?campaign_id={example_campaign_id}&p=2")
     assert response.status_code == 200
     result = response.json()
@@ -35,7 +35,7 @@ def test_get_arms(example_campaign_id):
 def test_add_arms(example_campaign_id):
     bandit = Bandit({"Arm1": BanditReward(5)}, {"Arm2"})
     storage.save_bandit(example_campaign_id, bandit)
-    load_bandits()  # Update bandit_db after saving new bandit
+    load_bandits()
     new_arms = ["NewArm1", "NewArm2"]
     response = client.post(f"/api/v1/bandit/add-arms?campaign_id={example_campaign_id}", json={"new_arms": new_arms})
     assert response.status_code == 200
@@ -60,6 +60,23 @@ def test_new_campaign(clean_bandits_dir):
     assert saved_bandit.explored_arms_rwds == {"ExploredArm1": 0, "ExploredArm2": 0}
 
 
+def test_update_bandit(example_campaign_id):
+    bandit = Bandit({"Arm1": BanditReward(5)}, {"Arm2"})
+    storage.save_bandit(example_campaign_id, bandit)
+    load_bandits()
+    new_sentences_and_rewards = [("NewSentence1", 3.0), ("NewSentence2", 4.0)]
+    response = client.post(f"/api/v1/bandit/update-bandit?campaign_id={example_campaign_id}",
+                           json={"new_sentences_and_rewards": new_sentences_and_rewards})
+    assert response.status_code == 200
+    result = response.json()
+    assert result["campaign_id"] == example_campaign_id
+    updated_bandit = storage.load_bandit(example_campaign_id)
+    assert "NewSentence1" in updated_bandit.explored_arms
+    assert updated_bandit.explored_arms["NewSentence1"].mean_reward == 3.0
+    assert "NewSentence2" in updated_bandit.explored_arms
+    assert updated_bandit.explored_arms["NewSentence2"].mean_reward == 4.0
+
+
 def test_persistence_between_runs(clean_bandits_dir):
     bandit_db = {
         1: Bandit({"Arm1": BanditReward(5)}, {"Arm2"})
@@ -81,7 +98,7 @@ def test_save_and_load_multiple_bandits(clean_bandits_dir):
     for campaign_id, bandit in bandits.items():
         storage.save_bandit(campaign_id, bandit)
 
-    load_bandits()  # Update bandit_db after saving new bandits
+    load_bandits()
 
     for campaign_id, expected_bandit in bandits.items():
         loaded_bandit = storage.load_bandit(campaign_id)
