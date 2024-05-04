@@ -18,7 +18,6 @@ class AddArmsResponse(BaseModel):
 
 class NewCampaignRequest(BaseModel):
     campaign_id: int
-    explored_arms: List[str] = []
     unexplored_arms: List[str] = []
 
 

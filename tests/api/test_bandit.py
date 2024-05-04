@@ -46,18 +46,16 @@ def test_add_arms(example_campaign_id):
 
 def test_new_campaign(clean_bandits_dir):
     campaign_id = 2
-    explored_arms = ["ExploredArm1", "ExploredArm2"]
     unexplored_arms = ["UnexploredArm1", "UnexploredArm2"]
     response = client.post("/api/v1/bandit/new-campaign", json={
         "campaign_id": campaign_id,
-        "explored_arms": explored_arms,
         "unexplored_arms": unexplored_arms
     })
     assert response.status_code == 200
     result = response.json()
     assert result["campaign_id"] == campaign_id
     saved_bandit = storage.load_bandit(campaign_id)
-    assert saved_bandit.explored_arms_rwds == {"ExploredArm1": 0, "ExploredArm2": 0}
+    assert saved_bandit.explored_arms_rwds == {}
 
 
 def test_update_bandit(example_campaign_id):

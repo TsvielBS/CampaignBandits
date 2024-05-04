@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.models.bandit import Bandit, BanditReward
+from app.models.bandit import Bandit
 from app.schemas.bandit_schema import (
     GetArmsResponse,
     AddArmsRequest,
@@ -32,8 +32,7 @@ def add_arms(campaign_id: int, request: AddArmsRequest, bandit: Bandit = Depends
 def new_campaign(request: NewCampaignRequest):
     if request.campaign_id in bandit_db:
         raise HTTPException(status_code=400, detail="Campaign already exists")
-    explored_arms = {arm: BanditReward(0) for arm in request.explored_arms}
-    new_bandit = Bandit(explored_arms, set(request.unexplored_arms))
+    new_bandit = Bandit({}, set(request.unexplored_arms))
     bandit_db[request.campaign_id] = new_bandit
     storage.save_bandit(request.campaign_id, new_bandit)
     return NewCampaignResponse(campaign_id=request.campaign_id)
@@ -44,4 +43,3 @@ def update_bandit(campaign_id: int, request: UpdateBanditRequest, bandit: Bandit
     bandit.update_model(request.new_sentences_and_rewards)
     storage.save_bandit(campaign_id, bandit)
     return UpdateBanditResponse(campaign_id=campaign_id)
-

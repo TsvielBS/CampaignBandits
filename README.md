@@ -4,7 +4,7 @@ This repository contains a FastAPI microservice that implements a multi-armed ba
 
 1. **Get P arms**: Retrieve the top P arms for a given campaign using the Upper Confidence Bound (UCB) algorithm.
 2. **Add new arms**: Add new arms to an existing campaign.
-3. **Create a new campaign**: Initialize a new campaign with explored and unexplored arms.
+3. **Create a new campaign**: Initialize a new campaign with unexplored arms.
 4. **Update a bandit**: Update the bandit model with new sentences and rewards for a given campaign.
 
 ## Installation
@@ -77,7 +77,6 @@ Initialize a new campaign with explored and unexplored arms.
     ```json
     {
         "campaign_id": 1,
-        "explored_arms": ["ExploredArm1"],
         "unexplored_arms": ["UnexploredArm1"]
     }
     ```
